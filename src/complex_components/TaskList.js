@@ -22,13 +22,18 @@ const TaskList = (props) => {
   return (
     <TasksContainer>
       {props.tasks.map((task) => (
-        <Task key={task.id} data={task}/>
+        <Task
+          key={task.id}
+          data={task}
+          onClick={props.clickTask}
+        />
       ))}
     </TasksContainer>
   );
 };
 
 TaskList.propTypes = {
+  clickTask: propTypes.func.isRequired,
   tasks: propTypes.arrayOf(taskType)
 };
 

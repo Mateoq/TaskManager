@@ -1,6 +1,12 @@
+/**
+ * Module with the home page, which displays a header,
+ * the tasks form and the tasks list.
+ * @module src/pages/index
+ */
 import React, { useState } from 'react';
 import propTypes from 'prop-types';
 import Head from 'next/head';
+import { useRouter } from 'next/router';
 import styled, { css } from 'styled-components';
 import { switchProp } from 'styled-tools';
 
@@ -9,7 +15,13 @@ import Tasks from '../models/tasks';
 import { Div } from '../basic_components';
 import TaskForm from '../complex_components/TaskForm';
 import TaskList from '../complex_components/TaskList';
-import { colors, componentProps } from '../constants/strings';
+import { redirectServer } from '../utils';
+import {
+  cookieNames,
+  colors,
+  componentProps,
+  routes
+} from '../constants/strings';
 import { taskType } from '../types';
 
 import { colorProp } from '../styles/utils';
@@ -79,9 +91,11 @@ const TasksContainer = styled.div`
 
 const Home = (props) => {
   console.log('[HOME]', props);
+  const router = useRouter();
   const [tasks, setTasks] = useState(props.tasks);
 
-  const updateTasks = async (name, expireIn) => {
+  const addTask = async (name, expireIn) => {
+    console.log('[ADD_TASK]');
     const response = await fetch(routes.createTask, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -90,24 +104,59 @@ const Home = (props) => {
     const result = await response.json();
 
     if (result.status) {
-      setTasks(tasks);
+      setTasks(result.tasks);
     }
 
     return result;
   };
 
-  const toggleTask =
+  const toggleTask = async (taskId) => {
+    const response = await fetch(routes.toggleTask, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ taskId })
+    });
+    const result = await response.json();
+
+    if (result.status) {
+      setTasks(tasks.map((task) => {
+        if (task.id === taskId) {
+          task.done = !task.done;
+        }
+        return task;
+      }));
+    }
+
+    return result;
+  };
+
+  const signOut = async () => {
+    const response = await fetch(routes.signOut, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' }
+    });
+    const result = await response.json();
+
+    if (!result.status) {
+      return;
+    }
+
+    router.replace(routes.auth);
+  };
 
   return (
     <Container>
       <Head>
-        <title>Tasks Manager</title>
+        <title>Tasks Manager :: Home</title>
         <link href='https://cdn.jsdelivr.net/npm/boxicons@2.0.4/css/boxicons.min.css' rel='stylesheet'></link>
       </Head>
       <HeaderContainer>
         <Header>
           <Div>
-            <HeaderItem as="button">
+            <HeaderItem
+              as="button"
+              onClick={signOut}
+            >
               Sign Out
             </HeaderItem>
           </Div>
@@ -121,17 +170,23 @@ const Home = (props) => {
         </Header>
       </HeaderContainer>
       <TaskFormContainer>
-        <TaskForm updateTasks={updateTasks}/>
+        <TaskForm addTask={addTask}/>
       </TaskFormContainer>
       <TasksContainer>
-        <TaskList tasks={tasks}/>
+        <TaskList tasks={tasks} clickTask={toggleTask}/>
       </TasksContainer>
     </Container>
   );
 };
 
-Home.getInitialProps = () => {
-  console.log('FETCH_DATA');
+Home.getInitialProps = ({ req, res }) => {
+  if (req && res) {
+    const { cookie } = req.headers;
+    if (!cookie || !cookie.includes(cookieNames.session)) {
+      redirectServer(res, routes.auth);
+    }
+  }
+
   return { tasks: Tasks.get() || [] };
 };
 

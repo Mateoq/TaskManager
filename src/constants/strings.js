@@ -17,10 +17,19 @@ export const colors = {
 };
 
 export const componentProps = {
-  as: 'as'
+  as: 'as',
+  display: 'display'
 };
 
 export const routes = {
+  signIn: '/api/signIn',
+  signOut: '/api/signOut',
   createTask: '/api/createTask',
-  toggleTask: '/api/toggleTask'
+  toggleTask: '/api/toggleTask',
+  auth: '/auth',
+  home: '/'
+};
+
+export const cookieNames = {
+  session: 'user_session'
 };

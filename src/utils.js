@@ -30,3 +30,15 @@ export function dateToISOString(date) {
   const result = d.toISOString().substr(0,10);
   return result;
 }
+
+export function respondError(res) {
+  res.statusCode = 200;
+  res.setHeader('Content-Type', 'application/json');
+  res.end(JSON.stringify({ status: false }));
+}
+
+export function redirectServer(res, destination) {
+  res.statusCode = 301;
+  res.setHeader('Location', destination);
+  res.end();
+}

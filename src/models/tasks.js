@@ -1,6 +1,6 @@
 import shortid from 'shortid';
 
-const Tasks = () => {
+function Tasks() {
   const date = new Date();
   date.setDate(date.getDate() + 3);
 
@@ -37,13 +37,22 @@ const Tasks = () => {
       return task;
     },
     toggle(id) {
-      tasks.forEach((task, index) => {
+      for (let tIndex = 0; tIndex < tasks.length; ++tIndex) {
+        const task = tasks[tIndex];
+
         if (task.id === id) {
-          tasks[index].done = !task.done;
+          tasks[tIndex].done = !task.done;
+          return;
         }
-      });
+      }
     }
   };
 };
 
-export default Tasks();
+if (!process.tasks) {
+  const tasks = Tasks();
+  process.tasks = tasks;
+}
+
+
+export default process.tasks;

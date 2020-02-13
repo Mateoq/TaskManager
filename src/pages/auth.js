@@ -1,13 +1,25 @@
-import React from 'react';
+/**
+ * Module with the Auth page, which contains the login form.
+ * @module src/pages/auth
+ */
+import React, { useState } from 'react';
+import Head from 'next/head';
 import styled from 'styled-components';
+import { useRouter } from 'next/router';
 
 import {
   Button,
   Form,
+  FormError,
   Input,
   Label
 } from '../basic_components';
-import { colors } from '../constants/strings';
+import { redirectServer } from '../utils';
+import {
+  colors,
+  cookieNames,
+  routes
+} from '../constants/strings';
 
 import { colorProp } from '../styles/utils';
 
@@ -38,13 +50,53 @@ const AuthHeadline = styled.h3`
 `;
 
 const Auth = (props) => {
-  const onSubmit = (e) => {
+  const router = useRouter();
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [displayError, setDisplayError] = useState(false);
+
+  const onSubmit = async (e) => {
     e.preventDefault();
+
+    if (!username.length || !password.length) {
+      return;
+    }
+
+    setLoading(true);
+    setDisplayError(false);
+    const response = await fetch(routes.signIn, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password })
+    });
+    const result = await response.json();
+
+    setLoading(false);
+
+    if (!result.status){
+      setDisplayError(true);
+      return;
+    }
+
+    router.replace(routes.home);
+  };
+
+  const onUsernameChange = (e) => {
+    setUsername(e.target.value);
+  };
+
+  const onPasswordChange = (e) => {
+    setPassword(e.target.value);
   };
 
   console.log('[AUTH]', props);
   return (
     <AuthContainer>
+      <Head>
+        <title>Tasks Manager :: Auth</title>
+        <link href='https://cdn.jsdelivr.net/npm/boxicons@2.0.4/css/boxicons.min.css' rel='stylesheet'></link>
+      </Head>
       <AuthInnerContainer>
         <AuthHeadline>
           Please Sign In
@@ -55,23 +107,51 @@ const Auth = (props) => {
         >
           <InputContainer>
             <Label text="Username">
-              <Input type="text"/>
+              <Input
+                onChange={onUsernameChange}
+                type="text"
+                value={username}
+              />
             </Label>
           </InputContainer>
           <InputContainer>
             <Label text="Password">
-              <Input type="password"/>
+              <Input
+                onChange={onPasswordChange}
+                type="password"
+                value={password}
+              />
             </Label>
           </InputContainer>
           <InputContainer>
-            <Button type="submit">
+            <Button
+              loading={loading}
+              type="submit"
+            >
               Log in
             </Button>
           </InputContainer>
+          <FormError
+            css={`text-align: center;`}
+            display={displayError}
+          >
+            The user or password are incorrect. Try again...
+          </FormError>
         </Form>
       </AuthInnerContainer>
     </AuthContainer>
   );
+};
+
+Auth.getInitialProps = ({ req, res }) => {
+  if (req && res) {
+    const { cookie } = req.headers;
+    if (cookie && cookie.includes(cookieNames.session)) {
+      redirectServer(res, routes.home);
+    }
+  }
+
+  return {};
 };
 
 export default Auth;

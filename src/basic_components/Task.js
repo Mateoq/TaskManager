@@ -3,6 +3,7 @@
  * @module src/basic_components/Task
  */
 import React from 'react';
+import propTypes from 'prop-types';
 import styled from 'styled-components';
 
 import { colors } from '../constants/strings';
@@ -56,9 +57,15 @@ const TaskContainer = styled.div.attrs({
   }
 `;
 
-const Task = ({ data }) => {
+const Task = ({ data, onClick }) => {
+  const clickTask = () => {
+    if (onClick) {
+      onClick(data.id);
+    }
+  };
+
   return (
-    <TaskContainer>
+    <TaskContainer onClick={clickTask}>
       <TaskName>{data.name}</TaskName>
       <TaskExpiredIn>
         {formatDate(data.expireIn)}
@@ -69,7 +76,8 @@ const Task = ({ data }) => {
 };
 
 Task.propTypes = {
-  data: taskType
+  data: taskType,
+  onClick: propTypes.func.isRequired
 };
 
 export default Task;

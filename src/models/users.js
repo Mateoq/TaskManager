@@ -24,4 +24,9 @@ const Users = () => {
   };
 };
 
-export default Users();
+if (!process.users) {
+  const users = Users();
+  process.users = users;
+}
+
+export default process.users;

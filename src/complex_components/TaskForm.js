@@ -11,6 +11,7 @@ import {
   Button,
   Div,
   Form,
+  FormError,
   Input,
   Label
 } from '../basic_components';
@@ -18,23 +19,6 @@ import { colors } from '../constants/strings';
 import { dateToISOString } from '../utils';
 
 import { colorProp } from '../styles/utils';
-import { rotation } from '../styles/animations';
-
-const FormError = styled.p`
-  color: ${colorProp(colors.error)};
-  font-size: 1.2rem;
-  font-weight: bold;
-`;
-
-const Loader = styled.span.attrs({
-  className: 'bx bx-loader'
-})`
-  animation: ${rotation} 2s linear infinite;
-  font-size: 1.3rem;
-  left: 41%;
-  position: absolute;
-  top: 10px;
-`;
 
 const TaskFormHeadline = styled.h3``;
 
@@ -48,7 +32,7 @@ const TaskForm = (props) => {
   const onSubmit = async (e) => {
     e.preventDefault();
 
-    console.log('[FORM]', name, expireIn);
+    console.log('[FORM]', name, expireIn, props);
 
     if (
       !name ||
@@ -62,7 +46,7 @@ const TaskForm = (props) => {
     setDisplayError(false);
     setLoading(true);
 
-    const result = await props.updateTasks(result.tasks);
+    const result = await props.addTask(name, expireIn);
 
     console.log('[FORM_RESULT]', result);
 
@@ -114,29 +98,22 @@ const TaskForm = (props) => {
         </Label>
         <Div>
           <Button
-            css={`
-              min-width: 96px;
-              min-height: 43px;
-              position: relative;
-            `}
-            disabled={loading}
+            loading={loading}
             type="submit"
           >
-            {(loading) ? <Loader /> : 'Submit'}
+            Submit
           </Button>
         </Div>
-        {(displayError) ? (
-          <FormError>
-            There was an error while creating the task.
-          </FormError>
-        ): null}
+        <FormError display={displayError}>
+          There was an error while creating the task.
+        </FormError>
       </Form>
     </Div>
   );
 };
 
 TaskForm.propTypes = {
-  updateTasks: propTypes.func.isRequired
+  addTask: propTypes.func.isRequired
 };
 
 export default TaskForm;

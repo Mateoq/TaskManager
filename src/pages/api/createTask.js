@@ -3,6 +3,7 @@
  * @module src/pages/api/createTask
  */
 import Tasks from '../../models/tasks';
+import { respondError } from '../../utils';
 
 export default (req, res) => {
   if (req.method !== 'POST') {
@@ -13,9 +14,7 @@ export default (req, res) => {
   const { body } = req;
 
   if (!body.name || !body.expireIn) {
-    res.statusCode = 200;
-    res.setHeader('Content-Type', 'application/json');
-    res.end(JSON.stringify({ status: false }));
+    respondError(res);
     return;
   }
 
