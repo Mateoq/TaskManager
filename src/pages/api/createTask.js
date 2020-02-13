@@ -10,7 +10,6 @@ export default (req, res) => {
     return;
   }
 
-  console.log('[CREATE_TASKS]', req.body);
   const { body } = req;
 
   if (!body.name || !body.expireIn) {

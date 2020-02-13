@@ -11,7 +11,6 @@ export default (req, res) => {
     return;
   }
 
-  console.log('[SIGN_OUT]', req.cookies);
   const { cookies } = req;
 
   if (!cookies[cookieNames.session]) {

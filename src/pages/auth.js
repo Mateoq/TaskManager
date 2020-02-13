@@ -90,7 +90,6 @@ const Auth = (props) => {
     setPassword(e.target.value);
   };
 
-  console.log('[AUTH]', props);
   return (
     <AuthContainer>
       <Head>

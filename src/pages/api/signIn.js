@@ -14,8 +14,6 @@ export default (req, res) => {
 
   const { body } = req;
 
-  console.log('[SIGN_IN]', req.body);
-
   if (!body.username || !body.password) {
     respondError(res);
     return;

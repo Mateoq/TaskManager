@@ -8,11 +8,14 @@ import propTypes from 'prop-types';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import styled, { css } from 'styled-components';
-import { switchProp } from 'styled-tools';
 
 import Tasks from '../models/tasks';
 
-import { Div } from '../basic_components';
+import {
+  Div,
+  Header,
+  HeaderItem
+} from '../basic_components';
 import TaskForm from '../complex_components/TaskForm';
 import TaskList from '../complex_components/TaskList';
 import { redirectServer } from '../utils';
@@ -23,47 +26,6 @@ import {
   routes
 } from '../constants/strings';
 import { taskType } from '../types';
-
-import { colorProp } from '../styles/utils';
-
-const HeaderItem = styled.span`
-  align-items: center;
-  background: none;
-  border: 0;
-  color: ${colorProp(colors.light)};
-  display: flex;
-  font-size: 1.2rem;
-  height: 100%;
-  padding: 0 20px;
-
-  ${switchProp(componentProps.as, {
-    button: css`
-      cursor: pointer;
-      transition: opacity 0.2s;
-
-      &:hover {
-        opacity: 0.8;
-      }
-
-      &:active,
-      &:focus {
-        outline: 0;
-      }
-    `
-  })};
-`;
-
-const Header = styled.header`
-  background: ${colorProp(colors.dark)};
-  color: ${colorProp(colors.light)};
-  column-gap: 10px;
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  grid-template-rows: auto;
-  height: 60px;
-  padding: 0 20px;
-  width: 100%;
-`;
 
 const Container = styled.div`
   display: grid;
@@ -90,12 +52,10 @@ const TasksContainer = styled.div`
 `;
 
 const Home = (props) => {
-  console.log('[HOME]', props);
   const router = useRouter();
   const [tasks, setTasks] = useState(props.tasks);
 
   const addTask = async (name, expireIn) => {
-    console.log('[ADD_TASK]');
     const response = await fetch(routes.createTask, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

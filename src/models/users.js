@@ -1,14 +1,14 @@
-import shorid from 'shortid';
+import shortid from 'shortid';
 
 const Users = () => {
   const users = [
     {
-      id: shorid.generate(),
+      id: shortid.generate(),
       username: 'testUser123',
       password: 'test123'
     },
     {
-      id: shorid.generate(),
+      id: shortid.generate(),
       username: 'Mateoq',
       password: 'Mateo123'
     }

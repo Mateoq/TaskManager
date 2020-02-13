@@ -20,8 +20,6 @@ import { dateToISOString } from '../utils';
 
 import { colorProp } from '../styles/utils';
 
-const TaskFormHeadline = styled.h3``;
-
 const initialDate = new Date().getTime();
 const TaskForm = (props) => {
   const [loading, setLoading] = useState(false);
@@ -31,8 +29,6 @@ const TaskForm = (props) => {
 
   const onSubmit = async (e) => {
     e.preventDefault();
-
-    console.log('[FORM]', name, expireIn, props);
 
     if (
       !name ||
@@ -47,8 +43,6 @@ const TaskForm = (props) => {
     setLoading(true);
 
     const result = await props.addTask(name, expireIn);
-
-    console.log('[FORM_RESULT]', result);
 
     setName('');
     setExpireIn(initialDate);
@@ -74,9 +68,7 @@ const TaskForm = (props) => {
       border-radius: 4px;
       padding: 16px;
     `}>
-      <TaskFormHeadline>
-        Create a New Task
-      </TaskFormHeadline>
+      <h3>Create a New Task</h3>
       <Form
         css={`padding-top: 15px;`}
         onSubmit={onSubmit}
